@@ -31,6 +31,7 @@ Typical usage
     from flask_restful import Api, Resource
     from flask import Flask
     from apispec import APISpec
+    import apispec_flask_restful
 
     class HelloResource(Resource):
         def get(self, hello_id):
@@ -47,11 +48,16 @@ Typical usage
 
     app = Flask(__name__)
     api = Api(app)
-    spec = APISpec(title='Spec', version='1.0', plugins=['apispec_flask_restful'])
+    spec = APISpec(
+        title='Spec',
+        version='1.0',
+        openapi_version='3.0.2',
+        plugins=[apispec_flask_restful.FlaskRestfulPlugin()]
+    )
 
     api.add_resource(HelloResource, '/hello')
 
-    spec.add_path(resource=HelloResource, api=api)
+    spec.path(resource=HelloResource, api=api)
     pprint(spec.to_dict()['paths'])
 
     # OrderedDict([('/hello',
@@ -66,7 +72,7 @@ Method `add_path` can be invoked with a resource path in a `path` parameter inst
 
 .. code-block:: python
 
-        spec.add_path(resource=HelloResource, path='/hello')
+        spec.path(resource=HelloResource, path='/hello')
 
 With Blueprint
 --------------
@@ -75,5 +81,5 @@ Flask blueprints are supported too by passing Flask app in `app` parameter:
 
 .. code-block:: python
 
-        spec.add_path(resource=HelloResource, api=api, app=app)
+        spec.path(resource=HelloResource, api=api, app=app)
 
